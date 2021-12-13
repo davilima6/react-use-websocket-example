@@ -24,7 +24,7 @@ function Child(props: Props) {
 
   useWebSocket(WS_URL, options, props.shouldConnect);
 
-  return <span>child!</span>;
+  return <span>child.</span>;
 }
 
 function AnotherChild(props: Props) {
@@ -42,7 +42,7 @@ function AnotherChild(props: Props) {
 
   useWebSocket(WS_URL, options, props.shouldConnect);
 
-  return <span>kid.</span>;
+  return <span>from another child.</span>;
 }
 
 export default function App() {
@@ -65,10 +65,10 @@ export default function App() {
     <article>
       <section>
         <h1>
-          Hello, <Child shouldConnect={shouldConnect} />
+          Hello, from <Child shouldConnect={shouldConnect} />
         </h1>
         <h2>
-          Hi, <AnotherChild shouldConnect={shouldConnect} />
+          Hi, from <AnotherChild shouldConnect={shouldConnect} />
         </h2>
         <p>The web socket should be: {shouldConnect ? 'ON' : 'OFF'}</p>
       </section>
