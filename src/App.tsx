@@ -1,45 +1,77 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { useMemo, useState } from 'react';
+import useWebSocket from 'react-use-websocket';
 
-function App() {
-  const [count, setCount] = useState(0)
+const WS_URL = 'ws://localhost:1201';
+const WS_OPTIONS = { share: true };
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+type Props = {
+  shouldConnect: boolean;
+};
+
+function Child(props: Props) {
+  // console.log('child: rendered');
+  const options = useMemo(
+    () => ({
+      ...WS_OPTIONS,
+      onOpen: () => console.log('child: opened'),
+      onError: () => console.log('child: errored'),
+      onMessage: () => console.log('child: received msg'),
+      onClose: () => console.log('child: closed'),
+    }),
+    []
+  );
+
+  useWebSocket(WS_URL, options, props.shouldConnect);
+
+  return <span>child!</span>;
 }
 
-export default App
+function AnotherChild(props: Props) {
+  // console.log('another child: rendered');
+  const options = useMemo(
+    () => ({
+      ...WS_OPTIONS,
+      onOpen: () => console.log('another child: opened'),
+      onError: () => console.log('another child: errored'),
+      onMessage: () => console.log('another child: received msg'),
+      onClose: () => console.log('another child: closed'),
+    }),
+    []
+  );
+
+  useWebSocket(WS_URL, options, props.shouldConnect);
+
+  return <span>kid.</span>;
+}
+
+export default function App() {
+  // console.log('app: rendered');
+  const [shouldConnect, setShouldConnect] = useState(true);
+  const options = useMemo(
+    () => ({
+      ...WS_OPTIONS,
+      onOpen: () => console.log('app: opened'),
+      onError: () => console.log('app: errored'),
+      onMessage: () => console.log('app: received msg'),
+      onClose: () => console.log('app: closed'),
+    }),
+    []
+  );
+
+  useWebSocket(WS_URL, options, shouldConnect);
+
+  return (
+    <article>
+      <section>
+        <h1>
+          Hello, <Child shouldConnect={shouldConnect} />
+        </h1>
+        <h2>
+          Hi, <AnotherChild shouldConnect={shouldConnect} />
+        </h2>
+        <p>The web socket should be: {shouldConnect ? 'ON' : 'OFF'}</p>
+      </section>
+      <button onClick={() => setShouldConnect(!shouldConnect)}>{shouldConnect ? 'Disconnect' : 'Connect'}</button>
+    </article>
+  );
+}
