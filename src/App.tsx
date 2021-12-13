@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import useWebSocket from 'react-use-websocket';
+import './App.css';
 
 const WS_URL = 'ws://localhost:1201';
 const WS_OPTIONS = { share: true };
